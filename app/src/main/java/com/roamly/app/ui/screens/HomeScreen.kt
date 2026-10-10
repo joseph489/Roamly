@@ -74,6 +74,7 @@ import com.roamly.app.ui.theme.RoamlyBackground
 import com.roamly.app.ui.theme.RoamlyBorder
 import com.roamly.app.ui.theme.RoamlyPrimary
 import com.roamly.app.ui.theme.RoamlyPrimaryContainer
+import com.roamly.app.ui.theme.RoamlySecondary
 import com.roamly.app.ui.theme.RoamlySkyBlue
 import com.roamly.app.ui.theme.RoamlySurface
 import com.roamly.app.ui.theme.RoamlySurfaceVariant
