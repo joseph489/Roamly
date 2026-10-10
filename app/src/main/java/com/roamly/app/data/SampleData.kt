@@ -9,6 +9,9 @@ import com.roamly.app.model.Trip
 import com.roamly.app.model.TripDay
 import com.roamly.app.model.TripStatus
 import com.roamly.app.model.TravellerRecord
+import com.roamly.app.model.DestinationDiscovery
+import com.roamly.app.model.CostCategoryItem
+import com.roamly.app.model.TripCostEstimate
 
 object SampleData {
 
@@ -447,5 +450,130 @@ object SampleData {
             contactPhone = "+81 90 1234 5678"
         )
     )
+
+    val sampleDestinations: List<DestinationDiscovery> = listOf(
+        DestinationDiscovery(
+            id = "dest_singapore",
+            name = "Singapore",
+            country = "Singapore",
+            flagEmoji = "🇸🇬",
+            shortSubtitle = "Futuristic gardens, iconic skyline & vibrant culinary culture",
+            isPlanAvailable = true,
+            availabilityStatus = "Trip plan available",
+            durationText = "5 days / 4 nights",
+            highlights = listOf(
+                "Marina Bay Sands & SkyPark",
+                "Gardens by the Bay & Cloud Forest",
+                "Chinatown & Kampong Glam",
+                "Sentosa & S.E.A. Aquarium",
+                "Jewel Changi Rain Vortex"
+            ),
+            sampleBudgetEstimate = "₹90,000 per person",
+            associatedTripId = "trip_singapore_2026"
+        ),
+        DestinationDiscovery(
+            id = "dest_japan",
+            name = "Japan",
+            country = "Japan",
+            flagEmoji = "🇯🇵",
+            shortSubtitle = "Ancient shrines, cherry blossoms & neon-lit metropolis",
+            isPlanAvailable = false,
+            availabilityStatus = "Trip planning coming soon",
+            durationText = "Preview only",
+            highlights = listOf("Tokyo Skyline", "Kyoto Shrines", "Mount Fuji", "Osaka Street Food"),
+            sampleBudgetEstimate = null,
+            associatedTripId = null
+        ),
+        DestinationDiscovery(
+            id = "dest_thailand",
+            name = "Thailand",
+            country = "Thailand",
+            flagEmoji = "🇹🇭",
+            shortSubtitle = "Golden temples, bustling night markets & tropical beaches",
+            isPlanAvailable = false,
+            availabilityStatus = "Trip planning coming soon",
+            durationText = "Preview only",
+            highlights = listOf("Bangkok Grand Palace", "Chiang Mai Temples", "Phuket Beaches", "Floating Markets"),
+            sampleBudgetEstimate = null,
+            associatedTripId = null
+        ),
+        DestinationDiscovery(
+            id = "dest_switzerland",
+            name = "Switzerland",
+            country = "Switzerland",
+            flagEmoji = "🇨🇭",
+            shortSubtitle = "Snow-capped Alpine peaks, scenic railways & crystal lakes",
+            isPlanAvailable = false,
+            availabilityStatus = "Trip planning coming soon",
+            durationText = "Preview only",
+            highlights = listOf("Matterhorn & Zermatt", "Lucerne Old Town", "Jungfraujoch", "Lake Geneva"),
+            sampleBudgetEstimate = null,
+            associatedTripId = null
+        )
+    )
+
+    val singaporeCostEstimate: TripCostEstimate = TripCostEstimate(
+        tripId = "trip_singapore_2026",
+        destination = "Singapore",
+        currencySymbol = "₹",
+        items = listOf(
+            CostCategoryItem(
+                category = "Flights",
+                title = "Return Economy Flights",
+                estimatedAmountInr = 28000,
+                description = "Illustrative roundtrip economy fare between major Indian metro hubs (DEL/BOM/BLR) and Singapore Changi (SIN). Flights are unbooked."
+            ),
+            CostCategoryItem(
+                category = "Accommodation",
+                title = "4 Nights Hotel (Twin Sharing)",
+                estimatedAmountInr = 24000,
+                description = "Estimated 4-night stay at a 4-star city hotel (Civic District / Bugis) based on double occupancy. Hotel is unbooked."
+            ),
+            CostCategoryItem(
+                category = "Meals",
+                title = "Meals & Hawker Centre Dining",
+                estimatedAmountInr = 11000,
+                description = "Daily dining budget covering UNESCO hawker centres (Lau Pa Sat, Maxwell), breakfasts, and refreshments over 5 days."
+            ),
+            CostCategoryItem(
+                category = "Attractions & Activities",
+                title = "Attractions & Activities",
+                estimatedAmountInr = 12000,
+                description = "Standard admission for Gardens by the Bay conservatories, Marina Bay SkyPark, S.E.A. Aquarium, and Singapore River bumboat cruise."
+            ),
+            CostCategoryItem(
+                category = "Airport Transfers",
+                title = "Airport Transfers",
+                estimatedAmountInr = 2500,
+                description = "Roundtrip airport shuttle or ride-hailing transfer between Changi International Airport and central hotel."
+            ),
+            CostCategoryItem(
+                category = "Local Transportation",
+                title = "Local Transportation",
+                estimatedAmountInr = 3500,
+                description = "5-day Singapore Tourist Pass or contactless tap-and-go MRT and public bus travel across the island."
+            ),
+            CostCategoryItem(
+                category = "Travel Insurance",
+                title = "Travel Insurance",
+                estimatedAmountInr = 2000,
+                description = "Comprehensive 5-day international medical, baggage delay, and travel inconvenience protection."
+            ),
+            CostCategoryItem(
+                category = "Visa Processing",
+                title = "Visa Processing & Entry",
+                estimatedAmountInr = 3000,
+                description = "Tourist visa processing facilitation fee. (Note: Electronic SG Arrival Card submission is free via official ICA)."
+            ),
+            CostCategoryItem(
+                category = "Miscellaneous",
+                title = "Miscellaneous & Contingency",
+                estimatedAmountInr = 4000,
+                description = "Local 4G/5G eSIM connection, daily incidentals, souvenirs, and contingency reserve."
+            )
+        ),
+        disclaimer = "Estimated planning budget. Actual costs depend on travel dates, departure airport, availability, and selected options. Flights and hotel are not booked."
+    )
 }
+
 

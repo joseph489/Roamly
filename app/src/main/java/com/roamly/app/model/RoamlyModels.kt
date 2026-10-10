@@ -108,3 +108,39 @@ data class TravellerRecord(
     val totalActivitiesCount: Int,
     val contactPhone: String = "+65 8123 4567"
 )
+
+data class DestinationDiscovery(
+    val id: String,
+    val name: String,
+    val country: String,
+    val flagEmoji: String,
+    val shortSubtitle: String,
+    val isPlanAvailable: Boolean,
+    val availabilityStatus: String, // "Trip plan available" vs "Trip planning coming soon"
+    val durationText: String = "",
+    val highlights: List<String> = emptyList(),
+    val sampleBudgetEstimate: String? = null,
+    val associatedTripId: String? = null
+)
+
+data class CostCategoryItem(
+    val category: String,
+    val title: String,
+    val estimatedAmountInr: Int,
+    val description: String
+) {
+    fun formattedAmount(): String = "₹" + String.format(java.util.Locale.ENGLISH, "%,d", estimatedAmountInr)
+}
+
+data class TripCostEstimate(
+    val tripId: String,
+    val destination: String,
+    val currencySymbol: String = "₹",
+    val items: List<CostCategoryItem>,
+    val disclaimer: String = "Estimated planning budget. Actual costs depend on travel dates, departure airport, availability, and selected options. Flights and hotel are not booked."
+) {
+    val totalEstimatedAmountInr: Int
+        get() = items.sumOf { it.estimatedAmountInr }
+
+    fun formattedTotal(): String = "₹" + String.format(java.util.Locale.ENGLISH, "%,d", totalEstimatedAmountInr)
+}

@@ -59,6 +59,7 @@ import com.roamly.app.ui.screens.HomeScreen
 import com.roamly.app.ui.screens.MyTripsScreen
 import com.roamly.app.ui.screens.ProfileScreen
 import com.roamly.app.ui.screens.RoleSelectionScreen
+import com.roamly.app.ui.screens.SingaporeOverviewScreen
 import com.roamly.app.ui.theme.RoamlyAccent
 import com.roamly.app.ui.theme.RoamlyAccentContainer
 import com.roamly.app.ui.theme.RoamlyBackground
@@ -266,6 +267,7 @@ private fun TravellerNavigationHost(
 ) {
     var selectedTab by remember { mutableStateOf(TravellerTab.HOME) }
     var showingProfile by remember { mutableStateOf(false) }
+    var viewingSingaporeOverview by remember { mutableStateOf(false) }
     var aiInitialPrompt by remember { mutableStateOf<String?>(null) }
     var openItineraryDirectly by remember { mutableStateOf(false) }
 
@@ -292,6 +294,9 @@ private fun TravellerNavigationHost(
                         selected = isSelected,
                         onClick = {
                             showingProfile = false
+                            if (tab == TravellerTab.HOME && selectedTab == TravellerTab.HOME) {
+                                viewingSingaporeOverview = false
+                            }
                             selectedTab = tab
                             openItineraryDirectly = false
                             if (tab != TravellerTab.HELP) {
@@ -340,22 +345,35 @@ private fun TravellerNavigationHost(
                 )
             } else {
                 when (selectedTab) {
-                    TravellerTab.HOME -> HomeScreen(
-                        repository = repository,
-                        onViewTravelPlan = {
-                            openItineraryDirectly = true
-                            selectedTab = TravellerTab.TRIPS
-                        },
-                        onNavigateToTrips = {
-                            openItineraryDirectly = false
-                            selectedTab = TravellerTab.TRIPS
-                        },
-                        onNavigateToAi = { prompt ->
-                            aiInitialPrompt = prompt
-                            selectedTab = TravellerTab.HELP
-                        },
-                        onNavigateToChecklists = { selectedTab = TravellerTab.CHECKLIST }
-                    )
+                    TravellerTab.HOME -> {
+                        if (viewingSingaporeOverview) {
+                            SingaporeOverviewScreen(
+                                repository = repository,
+                                onBackToDestinations = { viewingSingaporeOverview = false }
+                            )
+                        } else {
+                            HomeScreen(
+                                repository = repository,
+                                onSelectSingapore = {
+                                    repository.selectTrip("trip_singapore_2026")
+                                    viewingSingaporeOverview = true
+                                },
+                                onViewTravelPlan = {
+                                    openItineraryDirectly = true
+                                    selectedTab = TravellerTab.TRIPS
+                                },
+                                onNavigateToTrips = {
+                                    openItineraryDirectly = false
+                                    selectedTab = TravellerTab.TRIPS
+                                },
+                                onNavigateToAi = { prompt ->
+                                    aiInitialPrompt = prompt
+                                    selectedTab = TravellerTab.HELP
+                                },
+                                onNavigateToChecklists = { selectedTab = TravellerTab.CHECKLIST }
+                            )
+                        }
+                    }
                     TravellerTab.TRIPS -> MyTripsScreen(
                         repository = repository,
                         openItineraryDirectly = openItineraryDirectly

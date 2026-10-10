@@ -13,6 +13,8 @@ import com.roamly.app.model.TravellerRecord
 import com.roamly.app.model.Trip
 import com.roamly.app.model.TripStatus
 import com.roamly.app.model.UserRole
+import com.roamly.app.model.DestinationDiscovery
+import com.roamly.app.model.TripCostEstimate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,6 +43,9 @@ class RoamlyRepository private constructor(context: Context) {
 
     private val _travellers = MutableStateFlow<List<TravellerRecord>>(emptyList())
     val travellers: StateFlow<List<TravellerRecord>> = _travellers.asStateFlow()
+
+    private val _destinations = MutableStateFlow<List<DestinationDiscovery>>(SampleData.sampleDestinations)
+    val destinations: StateFlow<List<DestinationDiscovery>> = _destinations.asStateFlow()
 
     init {
         loadData()
@@ -158,6 +163,30 @@ class RoamlyRepository private constructor(context: Context) {
 
     fun selectTrip(tripId: String) {
         _currentTripId.value = tripId
+    }
+
+    // Destination Discovery & Trip Cost
+    fun getAvailableDestinations(): List<DestinationDiscovery> {
+        return _destinations.value
+    }
+
+    fun getDestinationById(id: String): DestinationDiscovery? {
+        return _destinations.value.find { it.id == id }
+    }
+
+    fun filterDestinations(query: String): List<DestinationDiscovery> {
+        val trimmed = query.trim()
+        if (trimmed.isEmpty()) return _destinations.value
+        return _destinations.value.filter { destination ->
+            destination.country.contains(trimmed, ignoreCase = true) ||
+            destination.name.contains(trimmed, ignoreCase = true) ||
+            destination.highlights.any { it.contains(trimmed, ignoreCase = true) } ||
+            destination.shortSubtitle.contains(trimmed, ignoreCase = true)
+        }
+    }
+
+    fun getTripCostEstimate(tripId: String = "trip_singapore_2026"): TripCostEstimate? {
+        return if (tripId == "trip_singapore_2026") SampleData.singaporeCostEstimate else null
     }
 
     fun addTrip(trip: Trip) {

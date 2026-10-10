@@ -1,5 +1,6 @@
 package com.roamly.app.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -409,12 +410,14 @@ private fun TripCardItem(
 }
 
 @Composable
-private fun DailyItineraryView(
+internal fun DailyItineraryView(
     trip: Trip,
     repository: RoamlyRepository,
     onBackToTrips: () -> Unit,
-    onTriggerBelongingsReminder: (DestinationItem) -> Unit
+    onTriggerBelongingsReminder: (DestinationItem) -> Unit = {}
 ) {
+    BackHandler(onBack = onBackToTrips)
+
     // Collect trips from repository to get live updates
     val trips by repository.trips.collectAsState()
     val liveTrip = trips.find { it.id == trip.id } ?: trip
