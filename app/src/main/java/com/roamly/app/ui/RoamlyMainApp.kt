@@ -109,153 +109,41 @@ fun RoamlyMainApp(
     repository: RoamlyRepository,
     authViewModel: AuthViewModel
 ) {
-    val authState by authViewModel.authState.collectAsState()
-    val selectedPortal by authViewModel.selectedPortal.collectAsState()
+    // Sign-in option bypassed: Direct seamless access to the Traveller portal
+    var activeRole by remember { mutableStateOf(UserRole.TRAVELLER) }
 
-    var travellerAuthStep by remember { mutableStateOf(AuthScreenStep.SIGN_IN) }
-    var guideAuthStep by remember { mutableStateOf(AuthScreenStep.SIGN_IN) }
+    val demoTravellerUser = remember {
+        AuthUser(
+            id = "demo_traveller",
+            email = "alex.chen@roamly.app",
+            fullName = "Alex Chen",
+            role = UserRole.TRAVELLER,
+            approvalStatus = ApprovalStatus.APPROVED
+        )
+    }
 
-    when (val state = authState) {
-        is AuthState.Initializing -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(RoamlyBackground),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    color = RoamlyPrimary,
-                    strokeWidth = 3.dp
-                )
-            }
-        }
+    val demoGuideUser = remember {
+        AuthUser(
+            id = "demo_guide",
+            email = "sarah.guide@roamly.app",
+            fullName = "Sarah Jenkins",
+            role = UserRole.GUIDE,
+            approvalStatus = ApprovalStatus.APPROVED
+        )
+    }
 
-        is AuthState.AwaitingEmailVerification -> {
-            EmailVerificationNoticeScreen(
-                email = state.email,
-                onBackToSignIn = {
-                    authViewModel.signOut()
-                    travellerAuthStep = AuthScreenStep.SIGN_IN
-                    guideAuthStep = AuthScreenStep.SIGN_IN
-                }
-            )
-        }
-
-        is AuthState.AwaitingGuideApproval -> {
-            GuidePendingApprovalScreen(
-                user = state.user,
-                onRefreshStatus = { authViewModel.restoreSession() },
-                onSignOut = { authViewModel.signOut() }
-            )
-        }
-
-        is AuthState.Authenticated -> {
-            val user = state.user
-            if (user.role == UserRole.GUIDE && user.approvalStatus == ApprovalStatus.APPROVED) {
-                GuideNavigationHost(
-                    repository = repository,
-                    currentUser = user,
-                    onSignOut = { authViewModel.signOut() }
-                )
-            } else {
-                TravellerNavigationHost(
-                    repository = repository,
-                    currentUser = user,
-                    onSignOut = { authViewModel.signOut() }
-                )
-            }
-        }
-
-        is AuthState.SignedOut,
-        is AuthState.SigningIn,
-        is AuthState.SigningUp,
-        is AuthState.SigningOut,
-        is AuthState.Error -> {
-            // Unauthenticated: Show portal selection or portal auth screen
-            when (selectedPortal) {
-                null -> {
-                    RoleSelectionScreen(
-                        onRoleSelected = { role ->
-                            authViewModel.selectPortal(role)
-                            travellerAuthStep = AuthScreenStep.SIGN_IN
-                            guideAuthStep = AuthScreenStep.SIGN_IN
-                        }
-                    )
-                }
-
-                UserRole.TRAVELLER -> {
-                    when (travellerAuthStep) {
-                        AuthScreenStep.SIGN_IN -> TravellerSignInScreen(
-                            authViewModel = authViewModel,
-                            onNavigateToSignUp = {
-                                authViewModel.clearErrors()
-                                travellerAuthStep = AuthScreenStep.SIGN_UP
-                            },
-                            onNavigateToForgotPassword = {
-                                authViewModel.clearErrors()
-                                travellerAuthStep = AuthScreenStep.FORGOT_PASSWORD
-                            },
-                            onBackToRoleSelection = {
-                                authViewModel.clearPortal()
-                            }
-                        )
-                        AuthScreenStep.SIGN_UP -> TravellerSignUpScreen(
-                            authViewModel = authViewModel,
-                            onNavigateToSignIn = {
-                                authViewModel.clearErrors()
-                                travellerAuthStep = AuthScreenStep.SIGN_IN
-                            },
-                            onBackToRoleSelection = {
-                                authViewModel.clearPortal()
-                            }
-                        )
-                        AuthScreenStep.FORGOT_PASSWORD -> TravellerForgotPasswordScreen(
-                            authViewModel = authViewModel,
-                            onBackToSignIn = {
-                                authViewModel.resetPasswordState()
-                                travellerAuthStep = AuthScreenStep.SIGN_IN
-                            }
-                        )
-                    }
-                }
-
-                UserRole.GUIDE -> {
-                    when (guideAuthStep) {
-                        AuthScreenStep.SIGN_IN -> GuideSignInScreen(
-                            authViewModel = authViewModel,
-                            onNavigateToSignUp = {
-                                authViewModel.clearErrors()
-                                guideAuthStep = AuthScreenStep.SIGN_UP
-                            },
-                            onNavigateToForgotPassword = {
-                                authViewModel.clearErrors()
-                                guideAuthStep = AuthScreenStep.FORGOT_PASSWORD
-                            },
-                            onBackToRoleSelection = {
-                                authViewModel.clearPortal()
-                            }
-                        )
-                        AuthScreenStep.SIGN_UP -> GuideSignUpScreen(
-                            authViewModel = authViewModel,
-                            onNavigateToSignIn = {
-                                authViewModel.clearErrors()
-                                guideAuthStep = AuthScreenStep.SIGN_IN
-                            },
-                            onBackToRoleSelection = {
-                                authViewModel.clearPortal()
-                            }
-                        )
-                        AuthScreenStep.FORGOT_PASSWORD -> TravellerForgotPasswordScreen(
-                            authViewModel = authViewModel,
-                            onBackToSignIn = {
-                                authViewModel.resetPasswordState()
-                                guideAuthStep = AuthScreenStep.SIGN_IN
-                            }
-                        )
-                    }
-                }
-            }
-        }
+    if (activeRole == UserRole.GUIDE) {
+        GuideNavigationHost(
+            repository = repository,
+            currentUser = demoGuideUser,
+            onSignOut = { activeRole = UserRole.TRAVELLER }
+        )
+    } else {
+        TravellerNavigationHost(
+            repository = repository,
+            currentUser = demoTravellerUser,
+            onSignOut = { activeRole = UserRole.GUIDE }
+        )
     }
 }
 
